@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Sentinel Privacy Lab | PII Protection Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="sentinel-lab.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+    
+            <div class="container">
+                <div class="header-content">
+                    <h1 class="title">
+                        <i class="fas fa-shield-alt"></i> Sentinel Privacy Lab
+                    </h1>
+                    <p class="subtitle">Real-time PII protection demonstration. See client-side encryption in action.</p>
+                    
+                    <div class="live-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon danger">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="piiDetected">0</span>
+                                <span class="stat-label">PII Detected</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="fieldsProtected">0</span>
+                                <span class="stat-label">Fields Protected</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon warning">
+                                <i class="fas fa-shield-virus"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="leaksPrevented">0</span>
+                                <span class="stat-label">Leaks Prevented</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Comparison Section -->
+                <div class="comparison-section">
+                    <div class="comparison-header">
+                        <h2>Before & After: PII Protection</h2>
+                        <p class="comparison-description">
+                            Type the same sensitive data in both forms to see the difference in real-time
+                        </p>
+                    </div>
+                    
+                    <div class="comparison-grid">
+                        <!-- Left: Vulnerable Form -->
+                        <section class="demo-panel vulnerable-panel">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <h3><i class="fas fa-unlock-alt"></i> Standard Form</h3>
+                                    <span class="status-badge danger">
+                                        <i class="fas fa-exclamation-triangle"></i> Vulnerable
+                                    </span>
+                                </div>
+                                <div class="panel-description">
+                                    Data is transmitted in plain text - visible to networks, servers, and browsers
+                                </div>
+                            </div>
+                            
+                            <!-- Vulnerable Form -->
+                            <form class="demo-form" id="vulnerableForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="vulnName">
+                                            <i class="fas fa-user"></i> Full Name
+                                        </label>
+                                        <input type="text" id="vulnName" placeholder="John Doe" class="vuln-input">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="vulnEmail">
+                                            <i class="fas fa-envelope"></i> Email Address
+                                            <span class="field-note danger">Contains PII</span>
+                                        </label>
+                                        <input type="email" id="vulnEmail" placeholder="john@example.com" class="vuln-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="vulnCard">
+                                            <i class="fas fa-credit-card"></i> Credit Card
+                                            <span class="field-note danger">Contains PII</span>
+                                        </label>
+                                        <input type="text" id="vulnCard" placeholder="4111 1111 1111 1111" class="vuln-input">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="vulnApiKey">
+                                            <i class="fas fa-key"></i> API Key
+                                            <span class="field-note danger">Contains PII</span>
+                                        </label>
+                                        <input type="text" id="vulnApiKey" placeholder="sk_live_51H... or ghp_..." class="vuln-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <label for="vulnMessage">
+                                        <i class="fas fa-comment-dots"></i> Message with Sensitive Data
+                                    </label>
+                                    <textarea id="vulnMessage" rows="3" placeholder="My SSN is 123-45-6789 and phone is (555) 123-4567..." class="vuln-input"></textarea>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-danger" id="sendVulnerableBtn">
+                                        <i class="fas fa-paper-plane"></i> Send Unprotected Data
+                                    </button>
+                                    <div class="action-note danger">
+                                        <i class="fas fa-info-circle"></i> All data sent in plain text
+                                    </div>
+                                </div>
+                            </form>
+                            
+                            <!-- Network Monitor for Vulnerable -->
+                            <div class="monitor vulnerable-monitor">
+                                <div class="monitor-header">
+                                    <h4><i class="fas fa-stream"></i> Network Monitor (Raw Data)</h4>
+                                    <div class="monitor-status" id="vulnerableStatus">
+                                        <span class="status-dot danger"></span>
+                                        <span class="status-text">No PII detected</span>
+                                    </div>
+                                </div>
+                                <div class="monitor-body">
+                                    <pre id="vulnerableMonitor">Start typing to see what data would be transmitted...</pre>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Right: Protected Form -->
+                        <section class="demo-panel protected-panel">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <h3><i class="fas fa-shield-check"></i> Sentinel Protected Form</h3>
+                                    <span class="status-badge success">
+                                        <i class="fas fa-check-circle"></i> Secure
+                                    </span>
+                                </div>
+                                <div class="panel-description">
+                                    PII is encrypted client-side before transmission - only tokens reach the server
+                                </div>
+                            </div>
+                            
+                            <!-- Protected Form -->
+                            <form class="demo-form" id="protectedForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="protName">
+                                            <i class="fas fa-user-shield"></i> Full Name
+                                        </label>
+                                        <input type="text" id="protName" placeholder="John Doe" class="prot-input">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="protEmail">
+                                            <i class="fas fa-envelope-shield"></i> Email Address
+                                            <span class="field-note success">Auto-protected</span>
+                                        </label>
+                                        <input type="email" id="protEmail" placeholder="john@example.com" class="prot-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="protCard">
+                                            <i class="fas fa-credit-card-blank"></i> Credit Card
+                                            <span class="field-note success">Auto-protected</span>
+                                        </label>
+                                        <input type="text" id="protCard" placeholder="4111 1111 1111 1111" class="prot-input">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="protApiKey">
+                                            <i class="fas fa-key-skeleton"></i> API Key
+                                            <span class="field-note success">Auto-protected</span>
+                                        </label>
+                                        <input type="text" id="protApiKey" placeholder="sk_live_51H... or ghp_..." class="prot-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <label for="protMessage">
+                                        <i class="fas fa-comment-shield"></i> Message with Sensitive Data
+                                    </label>
+                                    <textarea id="protMessage" rows="3" placeholder="My SSN is 123-45-6789 and phone is (555) 123-4567..." class="prot-input"></textarea>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-success" id="sendProtectedBtn">
+                                        <i class="fas fa-paper-plane-top"></i> Send Protected Data
+                                    </button>
+                                    <div class="action-note success">
+                                        <i class="fas fa-lock"></i> Only encrypted tokens sent
+                                    </div>
+                                </div>
+                            </form>
+                            
+                            <!-- Network Monitor for Protected -->
+                            <div class="monitor protected-monitor">
+                                <div class="monitor-header">
+                                    <h4><i class="fas fa-broadcast-tower"></i> Secure Data Stream</h4>
+                                    <div class="monitor-status" id="protectedStatus">
+                                        <span class="status-dot success"></span>
+                                        <span class="status-text">Ready</span>
+                                    </div>
+                                </div>
+                                <div class="monitor-body">
+                                    <pre id="protectedMonitor">Start typing to see encrypted data stream...</pre>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                
+                <!-- Information Section -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <h3><i class="fas fa-cogs"></i> How Sentinel Works</h3>
+                        <p>Understanding the protection mechanism</p>
+                    </div>
+                    
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <div class="info-icon danger">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h4>1. Real-time Detection</h4>
+                            <p>As you type, Sentinel scans for PII patterns (emails, cards, API keys, SSNs) using regular expressions.</p>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check-circle success"></i> Email detection: user@domain.com</li>
+                                <li><i class="fas fa-check-circle success"></i> Credit card: 4111-1111-1111-1111</li>
+                                <li><i class="fas fa-check-circle success"></i> API keys: sk_live_..., ghp_...</li>
+                                <li><i class="fas fa-check-circle success"></i> SSN: 123-45-6789</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-icon warning">
+                                <i class="fas fa-mask"></i>
+                            </div>
+                            <h4>2. Client-side Encryption</h4>
+                            <p>When PII is detected, it's immediately encrypted using Web Crypto API (AES-GCM 256-bit).</p>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check-circle success"></i> Encryption happens in your browser</li>
+                                <li><i class="fas fa-check-circle success"></i> Server never sees raw PII</li>
+                                <li><i class="fas fa-check-circle success"></i> Visual masking on blur</li>
+                                <li><i class="fas fa-check-circle success"></i> Original data stored securely</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-icon success">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <h4>3. Secure Transmission</h4>
+                            <p>Only encrypted tokens are sent to the server. Original PII never leaves your device.</p>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check-circle success"></i> Zero-trust architecture</li>
+                                <li><i class="fas fa-check-circle success"></i> Prevents man-in-the-middle attacks</li>
+                                <li><i class="fas fa-check-circle success"></i> Compliant with privacy regulations</li>
+                                <li><i class="fas fa-check-circle success"></i> Reduces data breach impact</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Demo Instructions -->
+                <div class="instructions-section">
+                    <div class="instruction-card">
+                        <h4><i class="fas fa-graduation-cap"></i> Try This Demo</h4>
+                        <ol class="instruction-list">
+                            <li><strong>Type sensitive data</strong> in both forms (email, credit card, API key)</li>
+                            <li><strong>Watch the Network Monitors</strong> - left shows raw data, right shows encrypted</li>
+                            <li><strong>Click outside fields</strong> to see automatic masking</li>
+                            <li><strong>Click "Send" buttons</strong> to simulate data transmission</li>
+                            <li><strong>Check the stats</strong> above to see protection metrics</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <h4><i class="fas fa-shield-alt"></i> Sentinel Privacy Lab</h4>
+                        <p>Client-side PII Protection SDK Demo</p>
+                    </div>
+                    
+                    <div class="footer-info">
+                        <p><i class="fas fa-code"></i> Built with Vanilla JavaScript & Web Crypto API</p>
+                        <p><i class="fas fa-user-secret"></i> Zero Trust Architecture | No Data Leaves Browser</p>
+                        <p class="footer-note">
+                            <i class="fas fa-info-circle"></i> This is a demonstration. All processing occurs locally in your browser.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
